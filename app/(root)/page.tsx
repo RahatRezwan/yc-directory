@@ -1,5 +1,8 @@
 import React from "react";
 import SearchForm from "../../components/search-form";
+import StartupCard from "@/components/startup-card";
+import { client } from "@/sanity/lib/client";
+import { STARTUPS_QUERY } from "@/sanity/lib/queries";
 
 interface IHomeProps {
   searchParams: Promise<{ query?: string }>;
@@ -7,6 +10,11 @@ interface IHomeProps {
 
 export default async function Home({ searchParams }: IHomeProps) {
   const query = (await searchParams).query;
+
+  const posts = await client.fetch(STARTUPS_QUERY);
+
+  console.log(JSON.stringify(posts, null, 2));
+
   return (
     <>
       <section className='pink_container'>
@@ -19,6 +27,21 @@ export default async function Home({ searchParams }: IHomeProps) {
         </p>
 
         <SearchForm query={query} />
+      </section>
+
+      <section className='section_container'>
+        <p className='text-30-semibold'>
+          {query ? `Search results for "${query}"` : "All Startups"}
+        </p>
+        <ul className='mt-7 card_grid'>
+          {posts?.length > 0 ? (
+            posts.map((post: StartupCardType, index: number) => (
+              <StartupCard key={post?._id} post={post} />
+            ))
+          ) : (
+            <></>
+          )}
+        </ul>
       </section>
     </>
   );
