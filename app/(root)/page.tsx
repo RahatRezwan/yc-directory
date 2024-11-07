@@ -1,6 +1,12 @@
 import React from "react";
+import SearchForm from "../../components/search-form";
 
-export default function Home() {
+interface IHomeProps {
+  searchParams: Promise<{ query?: string }>;
+}
+
+export default async function Home({ searchParams }: IHomeProps) {
+  const query = (await searchParams).query;
   return (
     <>
       <section className='pink_container'>
@@ -11,6 +17,8 @@ export default function Home() {
         <p className='sub-heading !max-w-3xl'>
           Submit Ideas, Vote on Pitches, and Get Noticed in Virtual Competitions.
         </p>
+
+        <SearchForm query={query} />
       </section>
     </>
   );
