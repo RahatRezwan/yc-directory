@@ -3,6 +3,7 @@ import SearchForm from "../../components/search-form";
 import StartupCard, { StartupCardType } from "@/components/startup-card";
 import { STARTUPS_QUERY } from "@/sanity/lib/queries";
 import { sanityFetch, SanityLive } from "@/sanity/lib/live";
+import { auth } from "@/auth";
 
 interface IHomeProps {
   searchParams: Promise<{ query?: string }>;
@@ -11,6 +12,9 @@ interface IHomeProps {
 export default async function Home({ searchParams }: IHomeProps) {
   const query = (await searchParams).query;
   const params = { search: query || null };
+
+  const session = await auth();
+  console.log(session?.id);
 
   const { data: posts } = await sanityFetch({ query: STARTUPS_QUERY, params });
   return (
