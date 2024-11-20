@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { formatDate } from "@/lib/utils";
 import { client } from "@/sanity/lib/client";
-import { STARTUPS_BY_ID_QUERY } from "@/sanity/lib/queries";
+import { PLAYLIST_BY_SLUG_QUERY, STARTUPS_BY_ID_QUERY } from "@/sanity/lib/queries";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,6 +10,7 @@ import React, { FC, Suspense } from "react";
 import markdownit from "markdown-it";
 import { Skeleton } from "@/components/ui/skeleton";
 import View from "@/components/view";
+import StartupCard, { StartupCardType } from "@/components/startup-card";
 
 const md = markdownit();
 
@@ -22,6 +23,10 @@ interface IStartupDetailsPageProps {
 const StartupDetailsPage: FC<IStartupDetailsPageProps> = async ({ params }) => {
   const id = (await params).id;
   const post = await client.fetch(STARTUPS_BY_ID_QUERY, { id });
+
+  const { select: editorPosts } = await client.fetch(PLAYLIST_BY_SLUG_QUERY, {
+    slug: "editor-picks",
+  });
 
   if (!post) {
     return notFound();
@@ -73,7 +78,17 @@ const StartupDetailsPage: FC<IStartupDetailsPageProps> = async ({ params }) => {
 
         <hr className='divider' />
 
-        {/* TODO: EDITOR SELECTED STARTUPS */}
+        {editorPosts?.length > 0 && (
+          <div className='max-w-4xl mx-auto'>
+            <p className='text-30-semibold'>Editor Picks</p>
+
+            <ul className='mt-7 card_grid-sm'>
+              {editorPosts.map((post: StartupCardType) => (
+                <StartupCard key={post._id} post={post} />
+              ))}
+            </ul>
+          </div>
+        )}
         <Suspense fallback={<Skeleton className='view_skeleton' />}>
           <View id={id} />
         </Suspense>
