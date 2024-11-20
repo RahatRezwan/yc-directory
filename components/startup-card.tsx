@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { EyeIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { FC } from "react";
 import { Button } from "./ui/button";
 import { Author, Startup } from "@/sanity/types";
+import { Skeleton } from "./ui/skeleton";
 
 export type StartupCardType = Omit<Startup, "author"> & { author?: Author };
 
@@ -38,8 +39,8 @@ const StartupCard: FC<IStartupCardProps> = ({ post }) => {
         </div>
         <Link href={`/user/${author?._id}`}>
           <Image
-            src='https://placehold.co/48x48'
-            alt='placeholder'
+            src={author?.image ?? "/placeholder.jpg"}
+            alt={author?.name ?? "placeholder"}
             width={48}
             height={48}
             className='rounded-full'
@@ -66,3 +67,15 @@ const StartupCard: FC<IStartupCardProps> = ({ post }) => {
 };
 
 export default StartupCard;
+
+export const StartupCardSkeleton = () => {
+  return (
+    <>
+      {[0, 1, 2, 3, 4].map((i: number) => (
+        <li key={cn("skeleton", i)}>
+          <Skeleton className='startup-card_skeleton' />
+        </li>
+      ))}
+    </>
+  );
+};
