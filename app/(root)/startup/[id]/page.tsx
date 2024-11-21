@@ -22,11 +22,14 @@ interface IStartupDetailsPageProps {
 
 const StartupDetailsPage: FC<IStartupDetailsPageProps> = async ({ params }) => {
   const id = (await params).id;
-  const post = await client.fetch(STARTUPS_BY_ID_QUERY, { id });
 
-  const { select: editorPosts } = await client.fetch(PLAYLIST_BY_SLUG_QUERY, {
-    slug: "editor-picks",
-  });
+  // parallel request
+  const [post, { select: editorPosts }] = await Promise.all([
+    client.fetch(STARTUPS_BY_ID_QUERY, { id }),
+    client.fetch(PLAYLIST_BY_SLUG_QUERY, {
+      slug: "editor-picks",
+    }),
+  ]);
 
   if (!post) {
     return notFound();
